@@ -32,23 +32,10 @@ var musicians = [];
 var net = require('net');
 
 var server = net.createServer(function(socket) {
-    
+
     var payload = JSON.stringify(musicians);
     socket.write(payload);
-    /*socket.write('Echo server\r\n');
-    //socket.pipe(socket);
 
-    socket.onConnect = function(success, msg){
-        if(success){
-
-            // Send musicians to the socket
-            var payload = JSON.stringify(musicians);
-            socket.write(payload);
-            //socket.pipe(socket);
-        }else{
-            alert('Connection to the server could not be estabilished: ' + msg);
-        }
-    }*/
 });
 
 server.listen(protocolTCP.PROTOCOL_PORT, protocolTCP.PROTOCOL_ADDRESS);
