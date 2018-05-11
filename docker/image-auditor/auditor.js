@@ -28,13 +28,15 @@ socketUDP.bind(protocolUDP.PROTOCOL_PORT, function(){
 
 var musicians = [];
 
-
 //we use a standard Node.js module to work with TCP
 var net = require('net');
 
 var server = net.createServer(function(socket) {
-    socket.write('Echo server\r\n');
-    socket.pipe(socket);
+    
+    var payload = JSON.stringify(musicians);
+    socket.write(payload);
+    /*socket.write('Echo server\r\n');
+    //socket.pipe(socket);
 
     socket.onConnect = function(success, msg){
         if(success){
@@ -42,17 +44,17 @@ var server = net.createServer(function(socket) {
             // Send musicians to the socket
             var payload = JSON.stringify(musicians);
             socket.write(payload);
+            //socket.pipe(socket);
         }else{
             alert('Connection to the server could not be estabilished: ' + msg);
         }
-    }
+    }*/
 });
 
 server.listen(protocolTCP.PROTOCOL_PORT, protocolTCP.PROTOCOL_ADDRESS);
 
 
 //---------------musicians array----------------
-var musicians = [];
 
 var musiciansAndSounds = new Map();
 musiciansAndSounds.set("ti-ta-ti", "piano");
@@ -64,13 +66,12 @@ musiciansAndSounds.set("boum-boum", "drum");
 
 
 //--------------fct called periodically to remove musicians----------
-var intervalID = async.setInterval(function(){
+var intervalID = /*async.*/setInterval(function(){
     var len = musicians.length;
     for (var i = 0; i < len; i++) {
         //Remove musicians if didn't hear it since 5 seconds
         var dateAct = Date.now();
         var diff = Math.abs(dateAct - musicians[i].activeSince);
-        console.log(diff);
         if(diff >= 5000){
             musicians.splice(i, 1);
         }
