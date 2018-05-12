@@ -7,7 +7,7 @@ protocolUDP.PROTOCOL_MULTICAST_ADDRESS = "239.255.22.5";
 
 var protocolTCP = new Object();
 protocolTCP.PROTOCOL_PORT = 2205;
-protocolTCP.PROTOCOL_ADDRESS = "127.0.0.1";
+protocolTCP.PROTOCOL_ADDRESS = "0.0.0.0";
 
 
 //--------------UDP socket-----------------------
@@ -68,7 +68,7 @@ var intervalID = /*async.*/setInterval(function(){
 
 
 //--------------Getting new datagram (callback fct)-----------------------
-socketUDP.on('message', function(msg, sourvce){
+socketUDP.on('message', function(msg, source){
 
 	//Parse the datagram
 	var dataReceived = JSON.parse(msg);
