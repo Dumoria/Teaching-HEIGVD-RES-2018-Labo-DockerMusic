@@ -32,7 +32,16 @@ var musicians = [];
 var net = require('net');
 
 var server = net.createServer(function(socket) {
-
+	var len = musicians.length;
+    for (var i = 0; i < len; i++) {
+        //Remove musicians if didn't hear it since 5 seconds
+        var dateAct = Date.now();
+        var diff = Math.abs(dateAct - musicians[i].activeSince);
+        if(diff >= 5000){
+            musicians.splice(i, 1);
+        }
+    }
+	
     var payload = JSON.stringify(musicians);
     socket.write(payload);
 
@@ -50,21 +59,6 @@ musiciansAndSounds.set("trulu", "flute");
 musiciansAndSounds.set("gzi-gzi", "violin");
 musiciansAndSounds.set("boum-boum", "drum");
 	
-
-
-//--------------fct called periodically to remove musicians----------
-var intervalID = /*async.*/setInterval(function(){
-    var len = musicians.length;
-    for (var i = 0; i < len; i++) {
-        //Remove musicians if didn't hear it since 5 seconds
-        var dateAct = Date.now();
-        var diff = Math.abs(dateAct - musicians[i].activeSince);
-        if(diff >= 5000){
-            musicians.splice(i, 1);
-        }
-    }
-
-}, 1000);
 
 
 //--------------Getting new datagram (callback fct)-----------------------
