@@ -1,9 +1,8 @@
 FROM node:latest
 
-ADD auditor.js /opt/src/
-
-WORKDIR /opt/src/
+COPY src /opt/app/
+WORKDIR /opt/app/
 
 RUN npm install
 
-ENTRYPOINT ["node", "/opt/src/auditor.js"]
+ENTRYPOINT ["node", "/opt/app/auditor.js"]
