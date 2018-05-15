@@ -36,13 +36,17 @@ var musicians = [];
 var net = require('net');
 
 var server = net.createServer(function(socket) {
+	
+	//nettoyage a l'etablissement connexion tcp
     var len = musicians.length;
+	console.log(len);
     for (var i = 0; i < len; i++) {
+		
         //Remove musicians if didn't hear it since 5 seconds
-        var dateAct = moment();
-        var diff = dateAct - musicians[i].activeSince;
-        if(diff >= 5000){
+        if(moment().diff(musicians[i].activeSince) >= 5000){
             musicians.splice(i, 1);
+			len = len - 1;
+			i = i -1;//limite stocker temp indice a retirer puis une fois boucle terminee
         }
     }
 	
@@ -76,10 +80,8 @@ socketUDP.on('message', function(msg, source){
 	var len = musicians.length;
 	var found = false;
 	for (var i = 0; i < len; i++) {
-	
 		if(musicians[i].uuid == dataReceived.uuidMus){
 			musicians[i].activeSince = moment();
-			musicians[i].stillActif = true;
 			found = true;
 			i = len;
 		}
@@ -88,13 +90,12 @@ socketUDP.on('message', function(msg, source){
 		var musician = new Object();
 		musician.uuid = dataReceived.uuidMus;
 		musician.instrument = musiciansAndSounds.get(dataReceived.sound);
-        musician.activeSince = moment();
-		musician.stillActif = true;
-		
+        musician.activeSince = moment();	
 		musicians[len] = musician;
 	}
 
     for (var i = 0; i < len; i++) {
+		console.log( musicians[i].activeSince);
         console.log( musicians[i].instrument + " " + musicians[i].uuid);
     }
 		
