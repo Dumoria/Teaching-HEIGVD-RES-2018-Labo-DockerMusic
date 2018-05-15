@@ -1,54 +1,59 @@
-//--------------Protocol----------------------
-var protocol = new Object();
-protocol.PROTOCOL_PORT = 7305;
-protocol.PROTOCOL_MULTICAST_ADDRESS = "239.255.22.5";
-
-
 //--------------UDP socket-----------------------
+//Protocol udp address and port
+var protocolUDP = new Object();
+protocolUDP.MULTICAST_ADDRESS = "239.255.22.5";
+protocolUDP.PORT = 7542;
+
 //we use a standard Node.js module to work with UDP
-var dgram = require('dgram');
+var dgram = require('dgram'); 
 
 //create datagram socket. We will use it to send our UDP dtatagrams
-var socket = dgram.createSocket('udp4');
+var socketUDP = dgram.createSocket('udp4');
 
+//config socket
+socketUDP.bind(protocolUDP.PORT, function(){
+    console.log("Joining multicast group");
+    socketUDP.addMembership(protocolUDP.MULTICAST_ADDRESS);
+});
 
-
-//--------------UUID generation-----------------------
-//we use a Node.js module to generate a UUID compliant with RFC4122 (npm install uuid --save)
+//-----------Create musician---------------
+//uuid for the musician's unique id 
 const uuidv1 = require('uuid/v1');
-var uuidMus = uuidv1();
+var instrument = process.argv[2]; 
+var sound;
+
+switch(instrument){
+	case "piano":
+		sound = "ti-ta-ti";
+		break;
+	case "flute":
+		sound = "trulu";
+		break;
+	case "trumpet":
+		sound = "pouet";
+		break;
+	case "violin":
+		sound = "gzi-gzi";
+		break;
+	case "drum":
+		sound = "boum-boum";
+		break;
+}
 
 
-//------------------Assign musician------------------
+var musician = new Object();
+musician.uuid = uuidv1();
+musician.sound = sound;
 
-var musiciansAndSounds = new Map();
-musiciansAndSounds.set("piano", "ti-ta-ti");
-musiciansAndSounds.set("trumpet", "pouet");
-musiciansAndSounds.set("flute", "trulu");
-musiciansAndSounds.set("violin", "gzi-gzi");
-musiciansAndSounds.set("drum", "boum-boum");
+//-----------------UDP sender-------------
 
-var typeMusician = process.argv[2]; //Get the name of the musician type (first arg => 2)
+var payload = JSON.stringify(musician);
 
-
-//---------------Sending periodicaly payload-------------
 var intervalID = setInterval(function(){
-
-	var res = new Object();
-	res.uuidMus = uuidMus;
-	res.sound = musiciansAndSounds.get(typeMusician);
-
-	var payload = JSON.stringify(res);
-
-	//--------------Sending Paylod-----------------------
-	//Send the payload via UDP (multicast)
+	//sending payload 
 	message = new Buffer(payload);
-	socket.send(message, 0, message.length, protocol.PROTOCOL_PORT, protocol.PROTOCOL_MULTICAST_ADDRESS, 
+	socketUDP.send(message, 0, message.length, protocolUDP.PORT, protocolUDP.MULTICAST_ADDRESS, 
 		function(err, bytes){
-			console.log("Sending payload: " + payload + " via port " + socket.address().port);
+			console.log("Sending payload: " + payload + " via port " + socketUDP.address().port);
 		});
-	
 }, 1000);
-	
-	
-	
